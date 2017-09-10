@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from splitx.forms import RegistrationForm
+from django.contrib.auth import update_session_auth_hash
+
+from splitx.forms import RegistrationForm, EditProfileForm
 
 def home(request):
     return render(request, 'splitx/home.html')
@@ -22,10 +23,25 @@ def view_profile(request):
 
 def edit_profile(request):
     if request.method == 'POST':
-        form = UserChangeForm(request.POST, instance=request.user)
+        form = EditProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
         return redirect('/splitx/profile')
     else:
-        form = UserChangeForm(instance=request.user)
+        form = EditProfileForm(instance=request.user)
         return render(request, 'splitx/edit_profile.html', {'form': form})
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            # NOTE: 'request.user' will be set to anonomus after 'save()', 'form.user' is one whose password got changed
+            update_session_auth_hash(request, form.user)
+            return redirect('/splitx/profile')
+        else:
+            return redirect('/splitx/change_password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        return render(request, 'splitx/change_password.html', {'form': form})
+
