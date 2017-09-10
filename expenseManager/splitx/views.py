@@ -4,7 +4,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 
-from splitx.forms import RegistrationForm, EditProfileForm
+from splitx.forms import RegistrationForm, EditProfileForm, AddExpenseForm
+
+def add_expense(request):
+    if request.method == 'POST':
+        form = AddExpenseForm(request.POST)
+        if form.is_valid():
+            expense = form.save(commit=False)
+            expense.created_by = request.user
+            expense.save()
+        return redirect('/splitx/profile')
+    else:
+        form = AddExpenseForm()
+        return render(request, 'splitx/expense_form.html', {'form':form})
 
 def home(request):
     return render(request, 'splitx/home.html')

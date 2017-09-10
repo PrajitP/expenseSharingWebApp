@@ -3,6 +3,17 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
+from splitx.models import Expense
+
+class AddExpenseForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = (
+            'name',
+            'cost',
+            'users',
+        )
+
 class EditProfileForm(UserChangeForm):
     class Meta:
         model = User
