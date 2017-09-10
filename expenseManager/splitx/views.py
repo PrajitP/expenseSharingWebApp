@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 
 from splitx.forms import RegistrationForm, EditProfileForm
 
@@ -18,9 +19,11 @@ def register(request):
         form = RegistrationForm()
         return render(request, 'splitx/register_form.html', {'form':form})
 
+@login_required
 def view_profile(request):
     return render(request, 'splitx/profile.html', {'user': request.user})
 
+@login_required
 def edit_profile(request):
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
@@ -31,6 +34,7 @@ def edit_profile(request):
         form = EditProfileForm(instance=request.user)
         return render(request, 'splitx/edit_profile.html', {'form': form})
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
