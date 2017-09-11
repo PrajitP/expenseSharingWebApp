@@ -5,14 +5,15 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from splitx.models import Expense
 
-class AddExpenseForm(forms.ModelForm):
-    class Meta:
-        model = Expense
-        fields = (
-            'name',
-            'cost',
-            'users',
-        )
+class AddExpenseForm(forms.Form):
+    name = forms.CharField(label='Expense description')
+    cost = forms.IntegerField(label='Expense amount')
+
+    friends_ids = []
+    for user in User.objects.all():
+        friends_ids.append((user.id, user.first_name))
+    paid_by = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=friends_ids)
+    paid_to = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=friends_ids)
 
 class EditProfileForm(UserChangeForm):
     class Meta:
@@ -46,5 +47,3 @@ class RegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
-
-

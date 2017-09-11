@@ -3,15 +3,21 @@ from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from splitx.forms import RegistrationForm, EditProfileForm, AddExpenseForm
+from splitx.models import Expense
 
 def add_expense(request):
     if request.method == 'POST':
         form = AddExpenseForm(request.POST)
         if form.is_valid():
-            expense = form.save(commit=False)
-            expense.created_by = request.user
+            expense = Expense(
+                name = form.cleaned_data['name'],
+                cost = form.cleaned_data['cost'],
+                created_by = request.user,
+                pub_date = timezone.now(),
+            )
             expense.save()
         return redirect('/splitx/profile')
     else:
