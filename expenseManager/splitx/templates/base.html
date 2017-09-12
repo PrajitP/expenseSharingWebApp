@@ -1,8 +1,6 @@
 <html>
     <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        {% load static %}
-        <!-- <link rel="stylesheet" href="{% static 'splitx/style.css' %}" type="text/css"> --!>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
         {% block head %}
             <title>SplitX</title>
         {% endblock %}
@@ -10,41 +8,33 @@
     <body>
         <div class="container">
 
-            <!-- Static navbar -->
-            <nav class="navbar navbar-default">
-              <div class="container-fluid">
-                <div class="navbar-header">
-                  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                  </button>
-                  <a class="navbar-brand" href="#">Split Expenses</a>
-                </div>
-                <div id="navbar" class="navbar-collapse collapse">
-                  {% if user.is_authenticated %}
-                  <ul class="nav navbar-nav">
-                    <li class="active"><a href="/splitx/">Home</a></li>
-                    <li><a href="/splitx/expenses/add">Add Expense</a></li>
-                    <li><a href="/splitx/logout">Logout</a></li>
-                    <li><a href="/splitx/profile">Profile</a></li>
-                    <li><a href="/splitx/profile/edit">Edit Profile</a></li>
-                    <li><a href="/splitx/change_password">Change Password</a></li>
-                  </ul>
-                  {% else %}
-                  <ul class="nav navbar-nav">
-                    <li class="active"><a href="/splitx/">Home</a></li>
-                  </ul>
-                  <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/splitx/login">Login</a></li>
-                    <li><a href="/splitx/register">Register</a></li>
-                  </ul>
-                  {% endif %}
-                </div><!--/.nav-collapse -->
-              </div><!--/.container-fluid -->
-            </nazav>
- 
+            <!-- Navigation bar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+              <a class="navbar-brand" href="#">Split X</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+            
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    {% if user.is_authenticated %}
+                      <li class="nav-item active"> <a class="nav-link" href="/splitx/">Home</a></li>
+                      <li class="nav-item"> <a class="nav-link" href="/splitx/expenses/add">Add Expense</a></li>
+                      <li class="nav-item"> <a class="nav-link" href="/splitx/profile">Profile</a></li>
+                      <li class="nav-item"> <a class="nav-link" href="/splitx/profile/edit">Edit Profile</a></li>
+                      <li class="nav-item"> <a class="nav-link" href="/splitx/change_password">Change Password</a></li>
+                      <li class="nav-item"> <a class="nav-link" href="/splitx/logout">Logout</a></li>
+                    {% else %}
+                      <li class="nav-item active"> <a class="nav-link" href="/splitx/">Home</a></li>
+                      <ul class="nav navbar-nav navbar-right">
+                          <li class="nav-item"> <a class="nav-link" href="/splitx/login">Login</a></li>
+                          <li class="nav-item"> <a class="nav-link" href="/splitx/register">Register</a></li>
+                      </ul>
+                    {% endif %}
+                </ul>
+              </div>
+            </nav>
+
             <!-- Main component -->
             <div class="jumbotron">
             <H1>SplitX (Split all your expenses)</H1>

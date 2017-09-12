@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models import Q
 
 from splitx.forms import RegistrationForm, EditProfileForm, AddExpenseForm
 from splitx.models import Expense, Transaction
@@ -42,7 +43,8 @@ def add_expense(request):
         return render(request, 'splitx/expense_form.html', {'form':form})
 
 def home(request):
-    return render(request, 'splitx/home.html')
+    transactions = get_all_transactions_for_user(request.user)
+    return render(request, 'splitx/home.html', {'transactions': transactions})
 
 def register(request):
     if request.method == 'POST':
@@ -57,6 +59,9 @@ def register(request):
 @login_required
 def view_profile(request):
     return render(request, 'splitx/profile.html', {'user': request.user})
+
+def get_all_transactions_for_user(user):
+    return Transaction.objects.all().filter(Q(paid_by=user.id) | Q(paid_to=user.id))    
 
 @login_required
 def edit_profile(request):

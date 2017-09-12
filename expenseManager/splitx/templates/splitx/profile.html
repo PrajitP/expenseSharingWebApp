@@ -5,11 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <H1>Profile</H1>
-    {{ user }}
-    <li>
-        <ul> First Name : {{ user.first_name }} </ul>
-        <ul> Last Name : {{ user.last_name }} </ul>
-        <ul> Email : {{ user.email }} </ul>
-    </li>
+    <ul class="list-group">
+        <li class="list-group-item">User : {{ user }}</li>
+        <li class="list-group-item">First Name : {{ user.first_name }}</li>
+        <li class="list-group-item">Last Name : {{ user.last_name }}</li>
+        <li class="list-group-item">Email : {{ user.email }}</li>
+    </ul>
 {% endblock %}

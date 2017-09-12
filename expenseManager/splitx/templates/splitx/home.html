@@ -5,5 +5,13 @@
 {% endblock %}
 
 {% block body %}
-    <H1>SplitX</H1>
+    {% for instance in transactions %}
+        <div class="card border-success mb-3" style="max-width: 20rem;">
+            <div class="card-header">Created by {{instance.expense_id.created_by.first_name}} in {{instance.expense_id.pub_date}}</div>
+          <div class="card-body">
+            <h4 class="card-title">{{instance.expense_id.name}}</h4>
+            <p class="card-text">{{instance.paid_by.first_name}} paid {{instance.amount}} Rs. to {{instance.paid_to.first_name}}</p>
+          </div>
+        </div>
+    {% endfor %}
 {% endblock %}
