@@ -6,12 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from splitx.forms import RegistrationForm, EditProfileForm, AddExpenseForm
-from splitx.models import Expense
+from splitx.models import Expense, Transaction
 
+@login_required
 def add_expense(request):
     if request.method == 'POST':
         form = AddExpenseForm(request.POST)
         if form.is_valid():
+            cost = form.cleaned_data['cost']
             expense = Expense(
                 name = form.cleaned_data['name'],
                 cost = form.cleaned_data['cost'],
@@ -19,6 +21,21 @@ def add_expense(request):
                 pub_date = timezone.now(),
             )
             expense.save()
+
+            paid_by = form.cleaned_data['paid_by']
+            paid_to = form.cleaned_data['paid_to']
+            cost_paid_by_each_user = int(cost) / len(paid_by)
+            for paid_by_user in paid_by:
+                cost_owe_by_each_user = cost_paid_by_each_user / len(paid_to)
+                for paid_to_user in paid_to:
+                    transaction = Transaction(
+                        paid_by = User.objects.get(pk=paid_by_user),
+                        paid_to = User.objects.get(pk=paid_to_user),
+                        expense_id = expense,
+                        amount = cost_owe_by_each_user,
+                    ) 
+                    transaction.save()
+
         return redirect('/splitx/profile')
     else:
         form = AddExpenseForm()

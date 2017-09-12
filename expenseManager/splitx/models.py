@@ -18,7 +18,7 @@ class Expense(models.Model):
     cost = models.IntegerField()
     created_by = models.ForeignKey(User)
     users = models.ManyToManyField(User, related_name='users')
-    pub_date = models.DateTimeField('auto_now_add=True', default=timezone.now())
+    pub_date = models.DateTimeField()
 
 class Transaction(models.Model):
     paid_by = models.ForeignKey(User, related_name='paid_by')

@@ -7,7 +7,7 @@ from splitx.models import Expense
 
 class AddExpenseForm(forms.Form):
     name = forms.CharField(label='Expense description')
-    cost = forms.IntegerField(label='Expense amount')
+    cost = forms.IntegerField(label='Expense amount', min_value=1)
 
     friends_ids = []
     for user in User.objects.all():
