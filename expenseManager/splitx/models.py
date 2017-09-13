@@ -14,14 +14,14 @@ def create_profile(sender, **kwargs):
 post_save.connect(create_profile, sender=User)
 
 class Expense(models.Model):
-    name = models.CharField(max_length=100)
-    cost = models.IntegerField()
+    name       = models.CharField(max_length=100)
+    cost       = models.IntegerField()
     created_by = models.ForeignKey(User)
-    users = models.ManyToManyField(User, related_name='users')
-    pub_date = models.DateTimeField()
+    pub_date   = models.DateTimeField()
 
 class Transaction(models.Model):
-    paid_by = models.ForeignKey(User, related_name='paid_by')
-    paid_to = models.ForeignKey(User, related_name='paid_to')
+    paid_by    = models.ForeignKey(User, related_name='paid_by')
+    paid_to    = models.ForeignKey(User, related_name='paid_to')
     expense_id = models.ForeignKey(Expense)
-    amount = models.IntegerField()
+    amount     = models.IntegerField()
+    pub_date   = models.DateTimeField()

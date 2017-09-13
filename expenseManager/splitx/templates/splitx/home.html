@@ -19,19 +19,26 @@
         </div>
     
         <div class="col">
-        {% for key, value in owe_to.items %}
             <ul class="list-group">
-                <li class="list-group-item list-group-item-danger">You owe {{key}} {{value}} Rs.</li>
+                {% if total_owe_to %}
+                <li class="list-group-item list-group-item-light"><b>{{total_owe_to}}</b> Rs.</li>
+                {% endif %}
+                {% for key, value in owe_to.items %}
+                <li class="list-group-item list-group-item-danger">You owe <b>{{key}} {{value}}</b> Rs.</li>
+                {% endfor %}
             </ul>
-        {% endfor %}
         </div>
     
         <div class="col">
-        {% for key, value in owe_from.items %}
             <ul class="list-group">
-                <li class="list-group-item list-group-item-success">{{key}} owes you {{value}} Rs.</li>
+                {% if total_owe_from %}
+                <li class="list-group-item list-group-item-light"><b>{{total_owe_from}}</b> Rs.</li>
+                {% endif %}
+                {% for key, value in owe_from.items %}
+                <li class="list-group-item list-group-item-success"><b>{{key}}</b> owes you <b>{{value}}</b> Rs.</li>
+                {% endfor %}
             </ul>
-        {% endfor %}
         </div>
+
     </div>
 {% endblock %}

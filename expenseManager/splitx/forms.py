@@ -9,6 +9,8 @@ class AddExpenseForm(forms.Form):
     name = forms.CharField(label='Expense description')
     cost = forms.IntegerField(label='Expense amount', min_value=1)
 
+    # Currently all users are consider as friends, so as users goes UI will get cluttered
+    # TODO: Add a friends functionality, or add group functionality
     friends_ids = []
     for user in User.objects.all():
         friends_ids.append((user.id, user.first_name))

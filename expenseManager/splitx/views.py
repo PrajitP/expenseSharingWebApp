@@ -16,12 +16,13 @@ def add_expense(request):
     if request.method == 'POST':
         form = AddExpenseForm(request.POST)
         if form.is_valid():
-            cost = form.cleaned_data['cost']
+            cost         = form.cleaned_data['cost']
+            current_time = timezone.now()
             expense = Expense(
-                name = form.cleaned_data['name'],
-                cost = form.cleaned_data['cost'],
+                name       = form.cleaned_data['name'],
+                cost       = cost,
                 created_by = request.user,
-                pub_date = timezone.now(),
+                pub_date   = current_time,
             )
             expense.save()
 
@@ -34,10 +35,11 @@ def add_expense(request):
                     # NOTE: 'paid_by' user can be same as 'paid_to' user,
                     #       this record is required to define completeness of expense.
                     transaction = Transaction(
-                        paid_by = User.objects.get(pk=paid_by_user),
-                        paid_to = User.objects.get(pk=paid_to_user),
+                        paid_by    = User.objects.get(pk=paid_by_user),
+                        paid_to    = User.objects.get(pk=paid_to_user),
                         expense_id = expense,
-                        amount = cost_owe_by_each_user,
+                        amount     = cost_owe_by_each_user,
+                        pub_date   = current_time,
                     ) 
                     transaction.save()
 
@@ -50,19 +52,33 @@ def home(request):
     # NOTE: Below code('request.user') will work even when there is no login user,
     #       since django has default login user(Anonymous)
     transactions = get_all_transactions_for_user(request.user)
-    owe_to = defaultdict(int)
+    owe_to   = defaultdict(int)
     owe_from = defaultdict(int)
+    total_owe_to   = 0
+    total_owe_from = 0
     for transaction in transactions:
         if transaction.paid_by == request.user:
             owe_from[transaction.paid_to.first_name] += int(transaction.amount)
+            total_owe_from += int(transaction.amount)
         else:
             owe_to[transaction.paid_by.first_name] += int(transaction.amount)
-    return render(request, 'splitx/home.html', {'transactions': transactions, 'owe_to': dict(owe_to), 'owe_from': dict(owe_from)})
+            total_owe_to += int(transaction.amount)
+    balance = total_owe_to - total_owe_to
+    return render(request, 'splitx/home.html', {\
+            'transactions':   transactions,\
+            'owe_to':         dict(owe_to),\
+            'owe_from':       dict(owe_from),\
+            'total_owe_to':   total_owe_to,\
+            'total_owe_from': total_owe_from,\
+            'balance':        balance,
+            })
 
 def get_all_transactions_for_user(user):
     # Retrieve all the transactions were current user is involve
     # and ignore transactions were user had paid to himself
-    return Transaction.objects.all().filter( (Q(paid_by=user.id) | Q(paid_to=user.id)) & ~Q(paid_by = F('paid_to')) )    
+    return Transaction.objects.all()\
+            .order_by('-pub_date')\
+            .filter( (Q(paid_by=user.id) | Q(paid_to=user.id)) & ~Q(paid_by = F('paid_to')) )    
 
 def register(request):
     if request.method == 'POST':
@@ -77,7 +93,6 @@ def register(request):
 @login_required
 def view_profile(request):
     return render(request, 'splitx/profile.html', {'user': request.user})
-
 
 @login_required
 def edit_profile(request):
@@ -104,4 +119,3 @@ def change_password(request):
     else:
         form = PasswordChangeForm(user=request.user)
         return render(request, 'splitx/change_password.html', {'form': form})
-
