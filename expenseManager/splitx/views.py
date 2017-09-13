@@ -4,10 +4,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, F
 
 from splitx.forms import RegistrationForm, EditProfileForm, AddExpenseForm
 from splitx.models import Expense, Transaction
+
+from collections import defaultdict
 
 @login_required
 def add_expense(request):
@@ -29,6 +31,8 @@ def add_expense(request):
             for paid_by_user in paid_by:
                 cost_owe_by_each_user = cost_paid_by_each_user / len(paid_to)
                 for paid_to_user in paid_to:
+                    # NOTE: 'paid_by' user can be same as 'paid_to' user,
+                    #       this record is required to define completeness of expense.
                     transaction = Transaction(
                         paid_by = User.objects.get(pk=paid_by_user),
                         paid_to = User.objects.get(pk=paid_to_user),
@@ -37,14 +41,28 @@ def add_expense(request):
                     ) 
                     transaction.save()
 
-        return redirect('/splitx/profile')
+        return redirect('/splitx/')
     else:
         form = AddExpenseForm()
         return render(request, 'splitx/expense_form.html', {'form':form})
 
 def home(request):
+    # NOTE: Below code('request.user') will work even when there is no login user,
+    #       since django has default login user(Anonymous)
     transactions = get_all_transactions_for_user(request.user)
-    return render(request, 'splitx/home.html', {'transactions': transactions})
+    owe_to = defaultdict(int)
+    owe_from = defaultdict(int)
+    for transaction in transactions:
+        if transaction.paid_by == request.user:
+            owe_from[transaction.paid_to.first_name] += int(transaction.amount)
+        else:
+            owe_to[transaction.paid_by.first_name] += int(transaction.amount)
+    return render(request, 'splitx/home.html', {'transactions': transactions, 'owe_to': dict(owe_to), 'owe_from': dict(owe_from)})
+
+def get_all_transactions_for_user(user):
+    # Retrieve all the transactions were current user is involve
+    # and ignore transactions were user had paid to himself
+    return Transaction.objects.all().filter( (Q(paid_by=user.id) | Q(paid_to=user.id)) & ~Q(paid_by = F('paid_to')) )    
 
 def register(request):
     if request.method == 'POST':
@@ -60,8 +78,6 @@ def register(request):
 def view_profile(request):
     return render(request, 'splitx/profile.html', {'user': request.user})
 
-def get_all_transactions_for_user(user):
-    return Transaction.objects.all().filter(Q(paid_by=user.id) | Q(paid_to=user.id))    
 
 @login_required
 def edit_profile(request):

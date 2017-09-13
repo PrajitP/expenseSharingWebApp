@@ -5,13 +5,33 @@
 {% endblock %}
 
 {% block body %}
-    {% for instance in transactions %}
-        <div class="card border-success mb-3" style="max-width: 20rem;">
-            <div class="card-header">Created by {{instance.expense_id.created_by.first_name}} in {{instance.expense_id.pub_date}}</div>
-          <div class="card-body">
-            <h4 class="card-title">{{instance.expense_id.name}}</h4>
-            <p class="card-text">{{instance.paid_by.first_name}} paid {{instance.amount}} Rs. to {{instance.paid_to.first_name}}</p>
-          </div>
+    <div class="row">
+        <div class="col">
+        {% for instance in transactions %}
+                <div class="card border-success mb-3" style="max-width: 20rem;">
+                    <div class="card-header">Created by {{instance.expense_id.created_by.first_name}} in {{instance.expense_id.pub_date}}</div>
+                  <div class="card-body">
+                    <h4 class="card-title">{{instance.expense_id.name}}</h4>
+                    <p class="card-text">{{instance.paid_by.first_name}} paid {{instance.amount}} Rs. to {{instance.paid_to.first_name}}</p>
+                  </div>
+                </div>
+        {% endfor %}
         </div>
-    {% endfor %}
+    
+        <div class="col">
+        {% for key, value in owe_to.items %}
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-danger">You owe {{key}} {{value}} Rs.</li>
+            </ul>
+        {% endfor %}
+        </div>
+    
+        <div class="col">
+        {% for key, value in owe_from.items %}
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-success">{{key}} owes you {{value}} Rs.</li>
+            </ul>
+        {% endfor %}
+        </div>
+    </div>
 {% endblock %}

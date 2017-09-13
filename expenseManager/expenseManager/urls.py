@@ -18,5 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^splitx/', include('splitx.urls'))
+    url(r'^splitx/', include('splitx.urls')),
+    url(r'^$', include('splitx.urls')),         # Redirect to 'splitx' application by default
 ]
